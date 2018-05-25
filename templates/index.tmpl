@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Album example for Bootstrap</title>
+    <title>LearnEnJoy</title>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <!-- Bootstrap core CSS -->
@@ -28,33 +28,12 @@
          #slider12c{
              width: 100%;
          }
-         #slider12c .slider-selection {
-	         background: #3399FF;
-         }
         </style>
 
   </head>
   <body>
 
     <header>
-      <div class="collapse bg-dark" id="navbarHeader">
-        <div class="container">
-          <div class="row">
-            <div class="col-sm-8 col-md-7 py-4">
-              <h4 class="text-white">About</h4>
-              <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
-            </div>
-            <div class="col-sm-4 offset-md-1 py-4">
-              <h4 class="text-white">Contact</h4>
-              <ul class="list-unstyled">
-                <li><a href="#" class="text-white">Follow on Twitter</a></li>
-                <li><a href="#" class="text-white">Like on Facebook</a></li>
-                <li><a href="#" class="text-white">Email me</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="navbar navbar-dark bg-dark box-shadow">
         <div class="container d-flex justify-content-between">
           <a href="#" class="navbar-brand d-flex align-items-center">
@@ -70,7 +49,7 @@
         <div class="container">
             <!-- <h1 class="jumbotron-heading">Video</h1>
             -->
-          <video controls id="Video">
+          <video id="Video">
               <source src="/static/test.mp4" type="video/mp4" >
               Your browser does not support the video tag.
           </video> 
@@ -116,15 +95,13 @@
        var duration = vid.duration;
        sliderC = new Slider("#ex12c",
                             { id: "slider12c", min: 0, max: duration, tooltip: 'always',
-                              range: true, value: [duration/3, duration*2/3] });
+                              value: duration/2 });
 
        lastv = sliderC.getValue();
        $("#ex12c").on("slide", function(slideEvt) {
            var tmp = slideEvt.value;
-           if(lastv[0] != tmp[0])
-               vid.currentTime=tmp[0];
-           else if (lastv[1] != tmp[1])
-               vid.currentTime=tmp[1];
+           if(lastv != tmp)
+               vid.currentTime=tmp;
            lastv=tmp;
            
            console.log(vid.currentTime);
