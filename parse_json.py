@@ -1,6 +1,7 @@
 import json
 from pandas.io.json import json_normalize
 import pandas as pd
+import numpy as np
 
 with open('static/test.json') as f:
     raw_json = json.load(f)
@@ -32,8 +33,19 @@ fragments = fragments.reset_index(drop=True)
 fragments = fragments.set_index('timestamp')
 # next part not working for some reason
 fragments.to_json('static/test_result.json')
-         #         'height',               'id',
-         #   'scores.anger',  'scores.contempt',   'scores.disgust',
-         #    'scores.fear', 'scores.happiness',   'scores.neutral',
-         # 'scores.sadness',  'scores.surprise',            'start',
-         #          'width',                'x',                'y']
+
+fdic = fragments.to_dict("index")
+keys = sorted(fdic.keys())
+
+keys = [k for k in keys if not np.isnan(k)]
+keys = sorted(keys)
+
+data = []
+pass_filter = ['scores.fear', 'y', 'width', 'scores.happiness', 'scores.neutral', 'fragments_idx', 'interval', 'scores.contempt', 'height', 'scores.disgust', 'start', 'scores.surprise', 'scores.sadness', 'events_idx', 'duration', 'x', 'scores.anger', 'id']
+for idx in keys:
+    tmp  = {"time": idx}
+    for d in pass_filter:
+        tmp[d] = fdic[idx][d]
+    data.append(tmp)
+
+
