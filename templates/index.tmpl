@@ -21,12 +21,17 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/bootstrap-slider.min.js"></script>
         <link href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/css/bootstrap-slider.min.css' rel='stylesheet' type='text/css'>
 
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+
         <style>
          #Video {
              width:300px;
          }
          #slider12c{
              width: 100%;
+         }
+         th{
+             text-align:center;
          }
         </style>
 
@@ -46,13 +51,40 @@
     <main role="main">
 
       <section class="jumbotron text-center">
-        <div class="container">
+          <div class="container">
+              <div class="col-sm-6">
+                  <video id="Video">
+                      <source src="/static/test.mp4" type="video/mp4" >
+                      Your browser does not support the video tag.
+                  </video> 
+              </div>
+              <div class="col-sm-6">
+                  <table id="InfoTable" class="table table-bordered">
+                      <thead>
+                          <tr>
+                              <th scope="col">Emotion</th>
+                              <th scope="col">Score</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td>Happiness</td>
+                              <td id="SHappiness"></td>
+                          </tr>
+                          <tr>
+                              <td>Contempt</td>
+                              <td id="SContempt"></td>
+                          </tr>
+                          <tr>
+                              <td>Sadness</td>
+                              <td id="SSadness"></td>
+                          </tr>
+                      </tbody>
+                  </table>
+      </div>
+
             <!-- <h1 class="jumbotron-heading">Video</h1>
             -->
-          <video id="Video">
-              <source src="/static/test.mp4" type="video/mp4" >
-              Your browser does not support the video tag.
-          </video> 
 
 
         </div>
@@ -87,28 +119,58 @@
 
   </body>
   <script>
-
+   // general purpose functions
+   function findClosest (x, arr) {
+       var indexArr = arr.map(function(k) { return Math.abs(k.time - x) })
+       var min = Math.min.apply(Math, indexArr)
+       return indexArr.indexOf(min)
+   }
+   function updateTable(d){
+       $("#SHappiness").html(Math.round(d["scores.happiness"]*1000)/10+" %")
+       $("#SContempt").html(Math.round(d["scores.contempt"]*1000)/10+" %")
+       $("#SSadness").html(Math.round(d["scores.sadness"]*1000)/10+" %")
+   }
+   // code
+   var data; // where the time data is saved
    var vid = document.getElementById("Video");
    var sliderC, lastv;
-   vid.onloadedmetadata = function(){
+
+   vid.addEventListener("loadedmetadata", function () {
        /* this.duration*/
        var duration = vid.duration;
+       var isSliderUpdate = false;
        sliderC = new Slider("#ex12c",
-                            { id: "slider12c", min: 0, max: duration, tooltip: 'always',
-                              value: duration/2 });
+          { id: "slider12c", min: 0, max: duration, tooltip: 'always',
+            value: 0 }); // duration / 2
 
        lastv = sliderC.getValue();
-       $("#ex12c").on("slide", function(slideEvt) {
-           var tmp = slideEvt.value;
-           if(lastv != tmp)
-               vid.currentTime=tmp;
-           lastv=tmp;
-           
-           console.log(vid.currentTime);
-	       /* vid.currentTime=slideEvt.value;*/
+       $("#ex12c").on("change", function (slideEvt) {
+           var tmp = slideEvt.value.newValue;
+           if(lastv != tmp) {
+               isSliderUpdate = true;
+               vid.currentTime = tmp;
+               lastv = tmp;
+               // update table
+               var idx = findClosest(tmp, data);
+               console.log(idx)
+               updateTable(data[idx]);
+           }
+       });
+       vid.addEventListener("timeupdate", function (event) {
+         if (isSliderUpdate) {
+          isSliderUpdate = false;
+         } else {
+          sliderC.setValue(vid.currentTime);
+         }
        });
    
-   }
+   });
+   console.log("loaded")
+   d3.json("/static/test_processed.json", function(error, d) {
+       console.log("loaded")
+       data = d.data;
+       updateTable(data[0]);
+   })
 
   </script>
 </html>
