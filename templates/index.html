@@ -50,7 +50,7 @@
             <!-- <h1 class="jumbotron-heading">Video</h1>
             -->
           <video id="Video" controls>
-              <source src="/static/testXY.mp4" type="video/mp4" >
+              <source src="/static/test.mp4" type="video/mp4" >
               Your browser does not support the video tag.
           </video> 
 
@@ -91,7 +91,6 @@
    var vid = document.getElementById("Video");
    var sliderC, lastv;
    vid.addEventListener("loadedmetadata", function () {
-    console.log("LOADED2");
        /* this.duration*/
        var duration = vid.duration;
        var isTimeUpdate = false,
@@ -106,16 +105,12 @@
            if(lastv != tmp) {
              isSliderUpdate = true;
              vid.currentTime = tmp;
-             console.log("Trying to set to ", tmp);
              lastv = tmp;
            }
-
-           console.log(tmp, vid.currentTime);
        });
        vid.addEventListener("timeupdate", function (event) {
          if (isSliderUpdate) {
           isSliderUpdate = false;
-           console.log("RESET");
          } else {
           sliderC.setValue(vid.currentTime);
          }
